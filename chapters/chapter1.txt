@@ -4,8 +4,6 @@ THE CREATIVE, HEAVEN
 </pre>
 <pre>
  below  CH&#39;IEN
-find . -type f -exec mv '{}' '{}'.txt \;
-
 THE CREATIVE, HEAVEN
 </pre>
 <pre>
