@@ -1,7 +1,3 @@
-// Copyright 2010 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
-
 package main
 
 import (
@@ -19,19 +15,11 @@ type Page struct {
 
 func (p *Page) save() error {
 	filename := p.Title + ".txt"
-	return ioutil.WriteFile(filename, p.Body, 0600)
-}
-
-func loadPage(title string) (*Page, error) {
-	filename := title + ".txt"
-	body, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
-	return &Page{Title: title, Body: body}, nil
+	return ioutil.WriteFile("chapters/"+filename, p.Body, 0600)
 }
 
 func loadChapter(title string) (*Page, error) {
+	fmt.Println("here2")
 	filename := "chapters/" + title + ".txt"
 	body, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -41,17 +29,8 @@ func loadChapter(title string) (*Page, error) {
 }
 
 func chapHandler(w http.ResponseWriter, r *http.Request, title string) {
+	fmt.Println("here1")
 	p, err := loadChapter(title)
-	//fmt.Println(
-	if err != nil {
-		http.Redirect(w, r, "/edit/"+title, http.StatusFound)
-		return
-	}
-	renderTemplate(w, "view", p)
-}
-
-func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
-	p, err := loadPage(title)
 	if err != nil {
 		http.Redirect(w, r, "/edit/"+title, http.StatusFound)
 		return
@@ -75,7 +54,7 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	http.Redirect(w, r, "/view/"+title, http.StatusFound)
+	http.Redirect(w, r, "/chap/"+title, http.StatusFound)
 }
 
 var templates = template.Must(template.ParseFiles("edit.html", "view.html"))
@@ -87,12 +66,13 @@ func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 	}
 }
 
-var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$")
+var validPath = regexp.MustCompile("^/(edit|save|view|chap)/([a-zA-Z0-9]+)$")
 
 func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		m := validPath.FindStringSubmatch(r.URL.Path)
 		if m == nil {
+			fmt.Println(m)
 			http.NotFound(w, r)
 			return
 		}
@@ -102,13 +82,13 @@ func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.Handl
 }
 
 func main() {
+	//http.HandleFunc("/" // add an info page here
 	http.HandleFunc("/view/", makeHandler(viewHandler))
 	http.HandleFunc("/chap/", makeHandler(chapHandler))
 	http.HandleFunc("/edit/", makeHandler(editHandler))
 	http.HandleFunc("/save/", makeHandler(saveHandler))
 
 	fmt.Println("Listening on 8080...")
-	fmt.Println("for example try: http://localhost:8080/view/chapter9")
 	http.ListenAndServe(":8080", nil)
 
 }
