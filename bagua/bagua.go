@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func BaguaGenerator() (hexa string, signature int) {
+func BaguaGenerator() (hexa []string, signature int) {
 	// show coin flips and what thing they represent
 	rand.Seed(int64(time.Now().Second()))
 
@@ -62,8 +62,7 @@ func BaguaGenerator() (hexa string, signature int) {
 		"000101": 35,
 		"000110": 45,
 		"000111": 12,
-		// second row
-		"001000": 15,
+		// second row "001000": 15,
 		"001001": 52,
 		"001010": 39,
 		"001011": 53,
@@ -154,7 +153,8 @@ func BaguaGenerator() (hexa string, signature int) {
 		res = append(res, state)
 		res = append(res, "\n")
 	}
-	hexa = strings.Join(res, "")
+	//hexa = strings.Join(res, "")
+	hexa = res
 	signature = signatureToChapter[strings.Join(hexSignature, "")]
 	return
 }

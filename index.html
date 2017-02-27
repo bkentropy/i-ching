@@ -5,12 +5,11 @@
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <div class="header-box">These are the chapters of the I Ching</div>
-    <div class="chapter-box">
-      <a href="chapters/chapter-1">Chapter 1 &#19904;</a>
-      <a href="chapters/chapter-2">Chapter 2 &#19905;</a>
-      <a href="chapters/chapter-3">Chapter 3</a>
-    </div>
-    <div class="footer-box"></div>
+      <h1>Refresh to see a new hexagram</h2>
+      {{ range $key := .Body }}
+          <p>{{ $key }}</p>   
+      {{ end}}
+      <p>Check out <a href="chap/chapter{{.Chapter}}">chapter{{.Chapter}}<a/></p>
+      <div class="footer-box"></div>
   </body>
 </html>
