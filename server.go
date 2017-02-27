@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"html/template"
+	"iching/bagua"
 	"io/ioutil"
 	"net/http"
 	"regexp"
@@ -39,7 +40,7 @@ func chapHandler(w http.ResponseWriter, r *http.Request, title string) {
 }
 
 func editHandler(w http.ResponseWriter, r *http.Request, title string) {
-	p, err := loadPage(title)
+	p, err := loadChapter(title)
 	if err != nil {
 		p = &Page{Title: title}
 	}
@@ -81,9 +82,14 @@ func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.Handl
 	}
 }
 
+func mainHandler(w http.ResponseWriter, r *http.Request) {
+	hexStr, hexSig := bagua.BaguaGenerator()
+	fmt.Fprintf(w, hexStr)
+	fmt.Println("hi", hexSig)
+}
+
 func main() {
-	//http.HandleFunc("/" // add an info page here
-	http.HandleFunc("/view/", makeHandler(viewHandler))
+	http.HandleFunc("/", mainHandler)
 	http.HandleFunc("/chap/", makeHandler(chapHandler))
 	http.HandleFunc("/edit/", makeHandler(editHandler))
 	http.HandleFunc("/save/", makeHandler(saveHandler))
